@@ -34,15 +34,6 @@ public class Hand {
 	public Card getCard(int index) {
 		return hand.get(index);
 	}
-	//returns a string representation of the hand
-	public String toString() {
-		String s = name + "'s hand: ";
-		for(int i = 0; i < hand.size() - 1; i++) {
-			s += hand.get(i).toString() + ", ";
-		}
-		s += hand.get(hand.size()-1).toString();
-		return s;
-	}
 	//gets the hand ArrayList
 	public ArrayList<Card> getHand(){
 		return hand;
@@ -52,6 +43,15 @@ public class Hand {
 		ace = false;
 		value = 0;
 		hand.clear();
+	}
+	//returns a string representation of the hand
+	public String toString() {
+		String s = name + "'s hand: ";
+		for(int i = 0; i < hand.size() - 1; i++) {
+			s += hand.get(i).toString() + ", ";
+		}
+		s += hand.get(hand.size()-1).toString();
+		return s;
 	}
 	//returns the current value of the hand
 	public int getValue() {
