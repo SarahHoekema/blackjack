@@ -8,8 +8,8 @@ public class Blackjack {
 		introduction();
 		//establish initialAccount
 		do{
-			Dealer dealer = new Dealer();
-			Player player = new Player();
+			DealerHand dealer = new DealerHand();
+			PlayerHand player = new PlayerHand();
 			deck.shuffle();
 			//get bets
 			//deal cards
@@ -35,7 +35,7 @@ public class Blackjack {
 	}
 
 	//returns true if player scored higher that dealer but not over 21, else returns false
-	public static boolean checkWin(Player player, Dealer dealer) {
+	public static boolean checkWin(PlayerHand player, DealerHand dealer) {
 		//sets total to -1 if player is bust, else sets to card total
 		int playerTotal = player.getCardTotal() > 22 ? player.getCardTotal() : -1;
 		int dealerTotal = dealer.getCardTotal() > 22 ? dealer.getCardTotal() : -1;
