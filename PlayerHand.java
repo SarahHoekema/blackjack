@@ -5,23 +5,54 @@ public class PlayerHand {
 	
 	private String name;
 	private int wager;
-	private ArrayList<Card>;
+	private boolean ace;
+	private int value;
+	private ArrayList<Card> hand;
 	
-	public PlayerHand(){
-		wager = 0;
+	public PlayerHand() {
 		name = "";
-		ArrayList<Card> hand = new ArrayList<Card>();
+		wager = 0;
+		ace = false;
+		value = 0;
+		hand = new ArrayList<Card>();	
 	}
 	
-	public void addHand(){
-		
+	public void addHand(Card card) {
+		hand.add(card);
+		value += card.cardValue();
+		if(card.cardValue() == 11) {
+			ace = true;
+		}
 	}
 	
-	public String getCards(int index) {
-		return hand.get(index).toString();
+	public void getCards() {
+		System.out.print("Current hand: ");
+		for(int i = 0; i < hand.size(); i++) {
+			System.out.print(hand.get(i).toString());
+		}
+		System.out.println();
 	}
 	
-	public void getWager() {
-		
+	public int getWager() {
+		return wager;
+	}
+	
+	public int getValue() {
+		if(ace == true && value > 21) {
+			value -= 10;
+		}
+		return value;
+	}
+	
+	public String getName() {
+		return name;
+	}
+	
+	public void setName(String name) {
+		this.name = name;
+	}
+	
+	public void setWager(int wager) {
+		this.wager = wager;
 	}
 }
