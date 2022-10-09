@@ -1,7 +1,7 @@
 //DeckOfCards.java
 //DeckOfCards class represents a deck of playing cards
 
-package deckOfCards;
+package blackjack;
 import java.security.SecureRandom;
 import java.util.Stack;
 

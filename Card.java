@@ -1,6 +1,6 @@
 //Card.java
 //Card class represents a playing card
-package deckOfCards;
+package blackjack;
 
 public class Card {
   private final String face; //face of card ("Ace," "Deuce", ...)

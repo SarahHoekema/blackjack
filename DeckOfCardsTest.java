@@ -1,6 +1,6 @@
 //DeckOfCardsTest.java
 //Card shuffling and dealing
-package deckOfCards;
+package blackjack;
 
 public class DeckOfCardsTest{
   //execute application
