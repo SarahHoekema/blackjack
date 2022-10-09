@@ -7,6 +7,7 @@ package blackjack;
 
 import java.util.ArrayList;
 
+//Hand.java represents a single hand of playing cards for the game Blackjack
 public class Hand {
 	//fields
 	private String name;
