@@ -2,7 +2,9 @@
 //DeckOfCards class represents a deck of playing cards
 
 package blackjack;
+
 import java.security.SecureRandom;
+import java.util.ArrayList;
 import java.util.Stack;
 
 
@@ -56,5 +58,11 @@ public class Deck{
     } else {
       return null; //return null to indicate that all Cards were dealt
     }
+  }
+  
+  public void addCards(ArrayList<Card> hand) {
+	  for(int i = 0; i < hand.size(); i++) {
+		  deck.push(hand.remove(i));
+	  }
   }
 }
