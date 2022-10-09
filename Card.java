@@ -1,31 +1,36 @@
-//Card.java
-//Card class represents a playing card
+//Sarah Hoekema, Sean Chambers
+//CS 145
+//October 11, 2022
+//Lab 4 - Deck of Cards
+
 package blackjack;
 
+//Card.java represents a single card for the game Blackjack
 public class Card {
-  private final String face; //face of card ("Ace," "Deuce", ...)
-  private final String suit; //suit of card ("Hearts", "Diamonds", etc)
+	//fields
+	private final String face;
+	private final String suit;
 
-  //two-argument constructor initializes card's face and suit
-  public Card(String cardFace, String cardSuit){
-    this.face = cardFace; //initializes face of card
-    this.suit = cardSuit; //initializes suit of card
-  }
+	//constructor
+	public Card(String cardFace, String cardSuit){
+		this.face = cardFace; //initializes face of card
+		this.suit = cardSuit; //initializes suit of card
+	}
 
-  //return String representation of Card
-  public String toString(){
-    return face + " of " + suit;
-  }
-  
-  public String getFace() {
-	  return face;
-  }
-  
-  public String getSuit() {
-	  return suit;
-  }
-  
-  public int cardValue() {
+	//return String representation of Card
+	public String toString(){
+		return face + " of " + suit;
+	}
+	//gets face of Card
+	public String getFace() {
+		return face;
+	}
+	//gets suit of Card
+	public String getSuit() {
+		return suit;
+	}
+	//calculates and returns the point value of the Card
+	public int cardValue() {
 		switch(face) {
 			case "Ace": return 11;
 			case "Deuce": return 2;
