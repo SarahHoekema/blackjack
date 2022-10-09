@@ -17,7 +17,7 @@ public class PlayerHand {
 		hand = new ArrayList<Card>();	
 	}
 	
-	public void addHand(Card card) {
+	public void addCard(Card card) {
 		hand.add(card);
 		value += card.cardValue();
 		if(card.cardValue() == 11) {
@@ -31,6 +31,11 @@ public class PlayerHand {
 			System.out.print(hand.get(i).toString());
 		}
 		System.out.println();
+	}
+	
+	
+	public ArrayList<Card> returnCards(){
+		return hand;
 	}
 	
 	public int getWager() {
