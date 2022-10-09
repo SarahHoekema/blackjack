@@ -1,23 +1,17 @@
 package blackjack;
-import java.util.*;
 
-public class DealerHand {
-	private final String name = "Dealer";
-	private boolean ace;
-	private int value;
-	private ArrayList<Card> hand;
+public class DealerHand extends Hand{
 	
 	public DealerHand() {
-		ace = false;
-		value = 0;
-		hand = new ArrayList<Card>();
+		super();
+		super.setName("Dealer");
 	}
 	
-	public void addHand(Card card) {
-		
-	}
-	
-	public void getCards() {
-		
+	public boolean requestCard() {
+		if(super.getValue() <= 16) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 }
