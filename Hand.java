@@ -16,24 +16,35 @@ public class Hand {
 	}
 	
 	public void addCard(Card card) {
-		hand.add(card);
 		value += card.cardValue();
 		if(card.cardValue() == 11) {
 			ace = true;
 		}
+		hand.add(card);
 	}
 	
-	public void getCards() {
-		System.out.print("Current hand: ");
-		for(int i = 0; i < hand.size(); i++) {
-			System.out.print(hand.get(i).toString());
+	public Card getCard(int index) {
+		return hand.get(index);
+	}
+	
+	public String toString() {
+		String s = name + "'s hand: ";
+		for(int i = 0; i < hand.size() - 1; i++) {
+			s += hand.get(i).toString() + ", ";
 		}
-		System.out.println();
+		s += hand.get(hand.size()-1).toString();
+		return s;
 	}
 	
 	
 	public ArrayList<Card> returnCards(){
 		return hand;
+	}
+	
+	public void resetHand() {
+		ace = false;
+		value = 0;
+		hand.clear();
 	}
 	
 	public int getValue() {

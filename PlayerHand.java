@@ -8,6 +8,11 @@ public class PlayerHand extends Hand{
 		wager = 0;	
 	}
 	
+	public void resetHand() {
+		super.resetHand();
+		wager = 0;
+	}
+	
 	public int getWager() {
 		return wager;
 	}
