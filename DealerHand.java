@@ -14,7 +14,7 @@ public class DealerHand extends Hand{
 	}
 	//returns true if the hand value is 16 or less and the dealer must hit or
 	//false if the hand value is 17 or more and the dealer must stand
-	public boolean requestCard() {
+	public boolean hitOrStand() {
 		if(super.getValue() <= 16) {
 			return true;
 		} else {
