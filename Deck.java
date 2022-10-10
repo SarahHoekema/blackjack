@@ -66,7 +66,7 @@ public class Deck{
   //adds cards from hand back into the deck
   public void addCards(ArrayList<Card> hand) {
 	  for(int i = 0; i < hand.size(); i++) {
-		  deck.push(hand.remove(i));
+		  deck.push(hand.get(i));
 	  }
   }
 }
