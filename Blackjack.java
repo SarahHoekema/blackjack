@@ -7,11 +7,19 @@ package blackjack;
 import java.util.*;
 
 public class Blackjack {
-	static Deck deck = new Deck();
+
+	//fields
+	private static Deck deck;
+	private static final int INITIAL_ACCOUNT;
 
 	public static void main(String[] args) {
+		//introduce game
 		introduction();
-		final int INITIAL_ACCOUNT = estblishAccount();
+		//initial deck
+		deck = new Deck();
+		//initalize account
+		INITIAL_ACCOUNT = estblishAccount();
+
 		do{
 			DealerHand dealer = new DealerHand();
 			PlayerHand player = new PlayerHand();
@@ -34,13 +42,13 @@ public class Blackjack {
 		}while(promptReplay() && balance != 0);
 		//print results
 	}
-	
+
 	//requests user to establish inital account amount
 	private static int establishAccount(){
 		Scanner accountAmount = new Scanner();
 		try {
 			System.out.println("Please input your inital balance.");
-			return accountAmount.nextInt();
+			return Integer.valueOf(accountAmount.nextLine());;
 		} catch (Exception e) {
 			System.out.println("Whoops something went wrong... " + e);
 			System.out.println("Setting inital balance to 100");
@@ -52,7 +60,7 @@ public class Blackjack {
 	 * Prints introduction to console.
 	 * Explains game and established basic rules. 
 	 */
-	public static void introduction() {
+	private static void introduction() {
 		System.out.println("Welcome to blackjack!");
 		System.out.println("This game is brought to you by Sarah Hoekema and Sean Chambers");
 		System.out.println("The goal of the game is to beat the dealers score without going over 21.");
@@ -61,14 +69,14 @@ public class Blackjack {
 	}
 
 	//returns true if player scored higher that dealer but not over 21, else returns false
-	public static boolean checkWin(PlayerHand player, DealerHand dealer) {
+	private static boolean checkWin(PlayerHand player, DealerHand dealer) {
 		//sets total to -1 if player is bust, else sets to card total
 		int playerTotal = player.getCardTotal() > 22 ? player.getCardTotal() : -1;
 		int dealerTotal = dealer.getCardTotal() > 22 ? dealer.getCardTotal() : -1;
 		return playerTotal > dealerTotal ? true : false;
 	}
 
-	public static void promptReplay() {
+	private static void promptReplay() {
 		//TODO ask if new game is desired
 	}
 
