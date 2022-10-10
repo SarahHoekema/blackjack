@@ -11,7 +11,7 @@ public class Blackjack {
 
 	public static void main(String[] args) {
 		introduction();
-		//establish initialAccount
+		final int INITIAL_ACCOUNT = estblishAccount();
 		do{
 			DealerHand dealer = new DealerHand();
 			PlayerHand player = new PlayerHand();
@@ -31,8 +31,21 @@ public class Blackjack {
 			}else{
 				//DO lose logic
 			}
-		}while(promptReplay() && balance != 0)
+		}while(promptReplay() && balance != 0);
 		//print results
+	}
+	
+	//requests user to establish inital account amount
+	private static int establishAccount(){
+		Scanner accountAmount = new Scanner();
+		try {
+			System.out.println("Please input your inital balance.");
+			return accountAmount.nextInt();
+		} catch (Exception e) {
+			System.out.println("Whoops something went wrong... " + e);
+			System.out.println("Setting inital balance to 100");
+			return 100;
+		}
 	}
 	
 	/**
