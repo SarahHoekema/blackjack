@@ -21,11 +21,19 @@ public class Blackjack {
 		INITIAL_ACCOUNT = estblishAccount();
 
 		do{
+			//initalize objects
+			Scanner responce = new Scanner();
 			DealerHand dealer = new DealerHand();
 			PlayerHand player = new PlayerHand();
+
+			//shuffle deck
 			deck.shuffle();
 			//get bets
-			//deal cards
+			//deals two cards to dealer and player
+			dealer.addCards(deck.dealCard());
+			player.addCards(deck.dealCard());
+			dealer.addCards(deck.dealCard());
+			player.addCards(deck.dealCard());
 			//get move
 			if(dealer.requestCard()){
 				do{
