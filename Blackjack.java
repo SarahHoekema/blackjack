@@ -35,8 +35,16 @@ public class Blackjack {
 		//print results
 	}
 	
+	/**
+	 * Prints introduction to console.
+	 * Explains game and established basic rules. 
+	 */
 	public static void introduction() {
-		System.out.println("introduction here");
+		System.out.println("Welcome to blackjack!");
+		System.out.println("This game is brought to you by Sarah Hoekema and Sean Chambers");
+		System.out.println("The goal of the game is to beat the dealers score without going over 21.");
+		System.out.println("Cards are equal to their face value.");
+		System.out.println("All face cards are worth 10 points, Aces are either 11 or 1.");
 	}
 
 	//returns true if player scored higher that dealer but not over 21, else returns false
