@@ -11,6 +11,7 @@ public class Blackjack {
 	//fields
 	private static Deck deck;
 	private static int balance;
+	private static Scanner scan;
 
 	public static void main(String[] args) {
 		//introduce game
@@ -23,37 +24,54 @@ public class Blackjack {
 
 		do{
 			//initalize objects
-			Scanner responce = new Scanner(System.in);
 			DealerHand dealer = new DealerHand();
 			PlayerHand player = new PlayerHand();
+			scan = new Scanner(System.in);
 
 			//shuffle deck
 			deck.shuffle();
 			//establishes the bet
-			player.setWager(establishBet());
+			player.setWager(establishBet(scan));
 			//deals two cards to dealer and player
 			dealer.addCard(deck.dealCard());
 			player.addCard(deck.dealCard());
 			dealer.addCard(deck.dealCard());
 			player.addCard(deck.dealCard());
-			//get move
+			//switch performs actions based on player input
+			switch(getMove(scan, player)){
+				case "HIT":
+					player.addCard(deck.dealCard());
+					System.out.println(player.toString());
+					break;
+				case "STAND":
+					break;
+				default:
+					break;
+			}
+			//deals to dealer per preset moves
+			System.out.println(dealer.toString());
 			if(dealer.hitOrStand()){
 				do{
 					dealer.addCard(deck.dealCard());
+					System.out.println(dealer.toString());
 				}while(dealer.hitOrStand());
 			}
+
+			//checks if player beat the dealer
 			if(checkWin(player,dealer)){
-				balance += player.getValue();
+				System.out.println("You win!");
+				balance += player.getWager();
 				deck.addCards(player.getHand());
 				deck.addCards(dealer.getHand());
 			}else if(player.getValue() == dealer.getValue()){
 				//DO tie logic
 			}else{
-				balance -= player.getValue();
+				System.out.println("Better luck next time...");
+				balance -= player.getWager();
 				deck.addCards(player.getHand());
 				deck.addCards(dealer.getHand());
 			}
-		}while(promptReplay() && balance != 0);
+		}while(balance != 0 && promptReplay(scan));
 		//print results
 	}
 
@@ -72,8 +90,7 @@ public class Blackjack {
 	}
 
 	//requests user to place their bet
-	private static int establishBet(){
-		Scanner betAmount = new Scanner(System.in);
+	private static int establishBet(Scanner betAmount){
 		try {
 			System.out.printf("You have %d left in your account.\nWhat is your bet?\n", balance);
 			String bet = betAmount.nextLine();
@@ -100,13 +117,20 @@ public class Blackjack {
 	//returns true if player scored higher that dealer but not over 21, else returns false
 	private static boolean checkWin(PlayerHand player, DealerHand dealer) {
 		//sets total to -1 if player is bust, else sets to card total
-		int playerTotal = player.getValue() > 22 ? player.getValue() : -1;
-		int dealerTotal = dealer.getValue() > 22 ? dealer.getValue() : -1;
+		int playerTotal = player.getValue() < 22 ? player.getValue() : -1;
+		int dealerTotal = dealer.getValue() < 22 ? dealer.getValue() : -1;
 		return playerTotal > dealerTotal ? true : false;
 	}
 
-	private static boolean promptReplay() {
-		Scanner playAgainScanner = new Scanner(System.in);
+	private static String getMove(Scanner nextMove, PlayerHand player){
+		System.out.println(player.toString());
+		System.out.println("Would you like to hit or stand?");
+		String move = nextMove.nextLine();
+		return move.toUpperCase();
+		
+	}
+
+	private static boolean promptReplay(Scanner playAgainScanner) {
 		System.out.print("Would you like to play again? ");
 		try {
 			String response = playAgainScanner.nextLine();    
