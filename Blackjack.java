@@ -1,8 +1,13 @@
+//Sarah Hoekema, Sean Chambers
+//CS 145
+//October 11, 2022
+//Lab 4 - Deck of Cards
+
 package blackjack;
 import java.util.*;
 
 public class Blackjack {
-	Deck deck = new Deck();
+	static Deck deck = new Deck();
 
 	public static void main(String[] args) {
 		introduction();
