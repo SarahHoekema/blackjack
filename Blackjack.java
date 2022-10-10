@@ -10,7 +10,7 @@ public class Blackjack {
 
 	//fields
 	private static Deck deck;
-	private static final int INITIAL_ACCOUNT;
+	private static int balance;
 
 	public static void main(String[] args) {
 		//introduce game
@@ -18,34 +18,40 @@ public class Blackjack {
 		//initial deck
 		deck = new Deck();
 		//initalize account
-		INITIAL_ACCOUNT = estblishAccount();
+		final int INITIAL_ACCOUNT = establishAccount();
+		balance = INITIAL_ACCOUNT;
 
 		do{
 			//initalize objects
-			Scanner responce = new Scanner();
+			Scanner responce = new Scanner(System.in);
 			DealerHand dealer = new DealerHand();
 			PlayerHand player = new PlayerHand();
 
 			//shuffle deck
 			deck.shuffle();
-			//get bets
+			//establishes the bet
+			player.setWager(establishBet());
 			//deals two cards to dealer and player
-			dealer.addCards(deck.dealCard());
-			player.addCards(deck.dealCard());
-			dealer.addCards(deck.dealCard());
-			player.addCards(deck.dealCard());
+			dealer.addCard(deck.dealCard());
+			player.addCard(deck.dealCard());
+			dealer.addCard(deck.dealCard());
+			player.addCard(deck.dealCard());
 			//get move
-			if(dealer.requestCard()){
+			if(dealer.hitOrStand()){
 				do{
-					dealer.addHand(deck.dealCard());
-				}while(dealer.requestCard());
+					dealer.addCard(deck.dealCard());
+				}while(dealer.hitOrStand());
 			}
 			if(checkWin(player,dealer)){
-				//Do win logic
-			}else if(player.getCardTotal() == dealer.getCardTotal()){
+				balance += player.getValue();
+				deck.addCards(player.getHand());
+				deck.addCards(dealer.getHand());
+			}else if(player.getValue() == dealer.getValue()){
 				//DO tie logic
 			}else{
-				//DO lose logic
+				balance -= player.getValue();
+				deck.addCards(player.getHand());
+				deck.addCards(dealer.getHand());
 			}
 		}while(promptReplay() && balance != 0);
 		//print results
@@ -53,14 +59,29 @@ public class Blackjack {
 
 	//requests user to establish inital account amount
 	private static int establishAccount(){
-		Scanner accountAmount = new Scanner();
+		Scanner accountAmount = new Scanner(System.in);
 		try {
 			System.out.println("Please input your inital balance.");
-			return Integer.valueOf(accountAmount.nextLine());;
+			int amount = Integer.valueOf(accountAmount.nextLine());
+			return amount;
 		} catch (Exception e) {
 			System.out.println("Whoops something went wrong... " + e);
 			System.out.println("Setting inital balance to 100");
 			return 100;
+		}
+	}
+
+	//requests user to place their bet
+	private static int establishBet(){
+		Scanner betAmount = new Scanner(System.in);
+		try {
+			System.out.printf("You have %d left in your account.\nWhat is your bet?\n", balance);
+			String bet = betAmount.nextLine();
+			return Integer.valueOf(bet);
+		} catch (Exception e) {
+			System.out.println("Whoops something went wrong... " + e);
+			System.out.println("Setting bet to 2");
+			return 2;
 		}
 	}
 	
@@ -79,13 +100,29 @@ public class Blackjack {
 	//returns true if player scored higher that dealer but not over 21, else returns false
 	private static boolean checkWin(PlayerHand player, DealerHand dealer) {
 		//sets total to -1 if player is bust, else sets to card total
-		int playerTotal = player.getCardTotal() > 22 ? player.getCardTotal() : -1;
-		int dealerTotal = dealer.getCardTotal() > 22 ? dealer.getCardTotal() : -1;
+		int playerTotal = player.getValue() > 22 ? player.getValue() : -1;
+		int dealerTotal = dealer.getValue() > 22 ? dealer.getValue() : -1;
 		return playerTotal > dealerTotal ? true : false;
 	}
 
-	private static void promptReplay() {
-		//TODO ask if new game is desired
+	private static boolean promptReplay() {
+		Scanner playAgainScanner = new Scanner(System.in);
+		System.out.print("Would you like to play again? ");
+		try {
+			String response = playAgainScanner.nextLine();    
+			//ensures response is the upper case of the first character
+			char upper = Character.toUpperCase(response.charAt(0));	
+			switch(upper) {								            
+				case 'Y':
+					return true;
+				case 'N': 
+					return false;
+				default: 
+					System.out.println("Sorry that response is not valid...");
+			}
+		} catch (Exception e) {
+			System.out.println("Sorry that response is not valid...");
+		}
+		return false;
 	}
-
 }
