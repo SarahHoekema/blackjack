@@ -12,31 +12,40 @@ public class Blackjack {
 	private static Deck deck;
 	private static int balance;
 	private static Scanner scan;
+	private static String name;
 
 	public static void main(String[] args) {
+		//initalize objects
+		deck = new Deck();
+		scan = new Scanner(System.in);
+		DealerHand dealer = new DealerHand();
+		PlayerHand player = new PlayerHand();
+		
 		//introduce game
 		introduction();
-		//initial deck
-		deck = new Deck();
+
+
+		//accepts players name
+		System.out.println("");
+	
 		//initalize account
-		final int INITIAL_ACCOUNT = establishAccount();
+		final int INITIAL_ACCOUNT = establishAccount(scan);
 		balance = INITIAL_ACCOUNT;
 
 		do{
-			//initalize objects
-			DealerHand dealer = new DealerHand();
-			PlayerHand player = new PlayerHand();
-			scan = new Scanner(System.in);
 
 			//shuffle deck
 			deck.shuffle();
+
 			//establishes the bet
 			player.setWager(establishBet(scan));
+
 			//deals two cards to dealer and player
 			dealer.addCard(deck.dealCard());
 			player.addCard(deck.dealCard());
 			dealer.addCard(deck.dealCard());
 			player.addCard(deck.dealCard());
+
 			//switch performs actions based on player input
 			switch(getMove(scan, player)){
 				case "HIT":
@@ -48,6 +57,7 @@ public class Blackjack {
 				default:
 					break;
 			}
+
 			//deals to dealer per preset moves
 			System.out.println(dealer.toString());
 			if(dealer.hitOrStand()){
@@ -61,23 +71,28 @@ public class Blackjack {
 			if(checkWin(player,dealer)){
 				System.out.println("You win!");
 				balance += player.getWager();
-				deck.addCards(player.getHand());
-				deck.addCards(dealer.getHand());
 			}else if(player.getValue() == dealer.getValue()){
-				//DO tie logic
+				System.out.println("It's a tie. Your bet is being returned");
 			}else{
 				System.out.println("Better luck next time...");
 				balance -= player.getWager();
-				deck.addCards(player.getHand());
-				deck.addCards(dealer.getHand());
 			}
+			
+			//add cards back to decl
+			deck.addCards(player.getHand());
+			deck.addCards(dealer.getHand());
+
+			//resets objects for next loop
+			player.resetHand();
+			dealer.resetHand();
+			scan.reset();
+
 		}while(balance != 0 && promptReplay(scan));
 		//print results
 	}
 
 	//requests user to establish inital account amount
-	private static int establishAccount(){
-		Scanner accountAmount = new Scanner(System.in);
+	private static int establishAccount(Scanner accountAmount){
 		try {
 			System.out.println("Please input your inital balance.");
 			int amount = Integer.valueOf(accountAmount.nextLine());
