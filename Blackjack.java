@@ -12,7 +12,6 @@ public class Blackjack {
 	private static Deck deck;
 	private static int balance;
 	private static Scanner scan;
-	private static String name;
 
 	public static void main(String[] args) {
 		//initalize objects
@@ -23,12 +22,19 @@ public class Blackjack {
 		
 		//introduce game
 		introduction();
+		scan.nextLine();
 
 
-		//accepts players name
-		System.out.println("");
-	
+		//accepts players name and formats it 
+		clear();
+		System.out.println("Welcome player!");
+		System.out.print("Please enter your name: ");
+		String name = scan.nextLine();
+		name = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+		player.setName(name);
+
 		//initalize account
+		clear();
 		final int INITIAL_ACCOUNT = establishAccount(scan);
 		balance = INITIAL_ACCOUNT;
 
@@ -38,6 +44,7 @@ public class Blackjack {
 			deck.shuffle();
 
 			//establishes the bet
+			clear();
 			player.setWager(establishBet(scan));
 
 			//deals two cards to dealer and player
@@ -45,26 +52,47 @@ public class Blackjack {
 			player.addCard(deck.dealCard());
 			dealer.addCard(deck.dealCard());
 			player.addCard(deck.dealCard());
+			
+			boolean stand = false;
+			//loops for action until user stands or busts
+			while(player.getValue()<22 && !stand){
+				//switch performs actions based on player input
+				switch(getMove(scan, player)){
+					case "HIT":
+						player.addCard(deck.dealCard());
+						System.out.print(player);
+						scan.nextLine();
+						clear();
+						break;
+					case "STAND":
+						stand = true;
+						clear();
+						break;
+					default:
+						System.out.print("Sorry input not recognized... ");
+						scan.nextLine();
+						clear();
+						break;
+				}
+		    }
 
-			//switch performs actions based on player input
-			switch(getMove(scan, player)){
-				case "HIT":
-					player.addCard(deck.dealCard());
-					System.out.println(player.toString());
-					break;
-				case "STAND":
-					break;
-				default:
-					break;
-			}
-
-			//deals to dealer per preset moves
-			System.out.println(dealer.toString());
-			if(dealer.hitOrStand()){
-				do{
-					dealer.addCard(deck.dealCard());
-					System.out.println(dealer.toString());
-				}while(dealer.hitOrStand());
+			//if player is not bust the dealer takes their turn
+			if(player.getValue()<22){
+				//deals to dealer per preset moves
+				System.out.println(dealer);
+				if(dealer.hitOrStand()){
+					do{
+						System.out.println("The dealer hits.");
+						dealer.addCard(deck.dealCard());
+						System.out.print(dealer);
+						scan.nextLine();
+						clear();
+					}while(dealer.hitOrStand());
+				}
+			} else{
+				System.out.print("Bust! ");
+				scan.nextLine();
+				clear();
 			}
 
 			//checks if player beat the dealer
@@ -78,7 +106,7 @@ public class Blackjack {
 				balance -= player.getWager();
 			}
 			
-			//add cards back to decl
+			//add cards back to deck
 			deck.addCards(player.getHand());
 			deck.addCards(dealer.getHand());
 
@@ -94,10 +122,12 @@ public class Blackjack {
 	//requests user to establish inital account amount
 	private static int establishAccount(Scanner accountAmount){
 		try {
-			System.out.println("Please input your inital balance.");
+			clear();
+			System.out.print("Please input your inital balance: ");
 			int amount = Integer.valueOf(accountAmount.nextLine());
 			return amount;
 		} catch (Exception e) {
+			clear();
 			System.out.println("Whoops something went wrong... " + e);
 			System.out.println("Setting inital balance to 100");
 			return 100;
@@ -107,10 +137,12 @@ public class Blackjack {
 	//requests user to place their bet
 	private static int establishBet(Scanner betAmount){
 		try {
-			System.out.printf("You have %d left in your account.\nWhat is your bet?\n", balance);
+			clear();
+			System.out.printf("You have %d left in your account.\nWhat is your bet? ", balance);
 			String bet = betAmount.nextLine();
 			return Integer.valueOf(bet);
 		} catch (Exception e) {
+			clear();
 			System.out.println("Whoops something went wrong... " + e);
 			System.out.println("Setting bet to 2");
 			return 2;
@@ -122,11 +154,12 @@ public class Blackjack {
 	 * Explains game and established basic rules. 
 	 */
 	private static void introduction() {
+		clear();
 		System.out.println("Welcome to blackjack!");
 		System.out.println("This game is brought to you by Sarah Hoekema and Sean Chambers");
 		System.out.println("The goal of the game is to beat the dealers score without going over 21.");
 		System.out.println("Cards are equal to their face value.");
-		System.out.println("All face cards are worth 10 points, Aces are either 11 or 1.");
+		System.out.print("All face cards are worth 10 points, Aces are either 11 or 1.");
 	}
 
 	//returns true if player scored higher that dealer but not over 21, else returns false
@@ -138,14 +171,15 @@ public class Blackjack {
 	}
 
 	private static String getMove(Scanner nextMove, PlayerHand player){
+		clear();
 		System.out.println(player.toString());
-		System.out.println("Would you like to hit or stand?");
+		System.out.print("Would you like to hit or stand? ");
 		String move = nextMove.nextLine();
 		return move.toUpperCase();
-		
 	}
 
 	private static boolean promptReplay(Scanner playAgainScanner) {
+		clear();
 		System.out.print("Would you like to play again? ");
 		try {
 			String response = playAgainScanner.nextLine();    
@@ -160,8 +194,16 @@ public class Blackjack {
 					System.out.println("Sorry that response is not valid...");
 			}
 		} catch (Exception e) {
+			clear();
 			System.out.println("Sorry that response is not valid...");
 		}
 		return false;
+	}
+
+	//clears the console screen
+	private static void clear(){
+		for(int i = 0; i < 20; i++){
+			System.out.println("");
+		}
 	}
 }
