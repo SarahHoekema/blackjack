@@ -7,6 +7,9 @@ package blackjack;
 
 import java.util.*;
 
+
+//Blackjack.java allows a player to bet on and play multiple rounds of blackjack against
+//the program, then prints out their ending winnings when they finish playing.
 public class Blackjack {
 
 	//fields
