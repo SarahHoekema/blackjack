@@ -12,13 +12,17 @@ public class Blackjack {
 	private static Deck deck;
 	private static int balance;
 	private static Scanner scan;
+	private static ArrayList<PlayerHand> handList;
+	private static Card dealersCard;
 
 	public static void main(String[] args) {
 		//initalize objects
 		deck = new Deck();
 		scan = new Scanner(System.in);
+		handList = new ArrayList<PlayerHand>();
 		DealerHand dealer = new DealerHand();
 		PlayerHand player = new PlayerHand();
+
 		
 		//introduce game
 		introduction();
@@ -51,86 +55,133 @@ public class Blackjack {
 			player.addCard(deck.dealCard());
 			dealer.addCard(deck.dealCard());
 			player.addCard(deck.dealCard());
+
+			//this is the card the user will be able to see
+			dealersCard = dealer.getHand().get(0);
 			
 			//blackjack is true if the starting hand size is 2 and the 
 			boolean blackjack = (player.getHand().size() == 2 && player.getValue() == 21) ? true : false;
-		
-			boolean stand = false;
-			//loops for action until user stands or busts, does not enter if player got a blackjack
-			while(player.getValue()<22 && !stand && !blackjack){
-				//switch performs actions based on player input
-				switch(getMove(scan, player)){
-					case "HIT":
-						player.addCard(deck.dealCard());
-						System.out.print(player);
-						scan.nextLine();
-						clear();
-						break;
-					case "STAND":
-						stand = true;
-						clear();
-						break;
-					default:
-						System.out.print("Sorry input not recognized... ");
-						scan.nextLine();
-						clear();
-						break;
-				}
-		    }
-
-			//if player is not bust the dealer takes their turn, skips if player got a blackjack
-			if(player.getValue()<22 && !blackjack){
-				//deals to dealer per preset moves
-				System.out.println(dealer);
-				if(dealer.hitOrStand()){
-					do{
-						System.out.println("The dealer hits.");
-						dealer.addCard(deck.dealCard());
-						System.out.print(dealer);
-						scan.nextLine();
-						clear();
-					}while(dealer.hitOrStand());
-					if(dealer.getValue() > 21){
-						System.out.print("Dealer busts! ");
-						scan.nextLine();
-						clear();
-					}
-				}
-			} else{
-				System.out.print("Bust! ");
-				scan.nextLine();
-				clear();
-			}
-
-			//checks if player beat the dealer
-			if(checkWin(player,dealer)){
-				System.out.print("You win! ");
-				//increases the balance by the players wager, or increases it by 1.5 times the wager if the player had a blackjack
-				balance += blackjack ? (INT) (player.getWager() * 1.5) : player.getWager();
-				scan.nextLine();
-				clear();
-			}else if(player.getValue() == dealer.getValue()){
-				System.out.print("It's a tie. Your bet is being returned ");
+			if(blackjack){
+				System.out.print("Blackjack!");
+				balance += (int) (player.getWager() * 1.5);
+				deck.addCards(player.getHand());
 				scan.nextLine();
 				clear();
 			}else{
-				System.out.print("Better luck next time... ");
-				balance -= player.getWager();
-				scan.nextLine();
-				clear();
-			}
-			
-			//add cards back to deck
-			deck.addCards(player.getHand());
-			deck.addCards(dealer.getHand());
 
-			//resets objects for next loop
-			player.resetHand();
+				//checks if player wants to split, skips if this would make the player negative
+				if(player.getHand().get(0).getFace()==player.getHand().get(1).getFace() && player.getWager() * 2 <= balance){
+					System.out.println(player);
+					System.out.println("The dealers face up card is the " + dealersCard + ".");
+					System.out.print("Would you like to split? ");
+					String responce =  scan.nextLine();
+					switch(responce.toUpperCase().charAt(0)){
+						case 'Y':
+							PlayerHand tempHandOne = new PlayerHand();
+							PlayerHand tempHandTwo = new PlayerHand();
+							tempHandOne.setName(player.getName());
+							tempHandTwo.setName(player.getName());
+							tempHandOne.addCard(player.getHand().get(0));
+							tempHandTwo.addCard(player.getHand().get(1));
+							tempHandOne.setWager(player.getWager());
+							tempHandTwo.setWager(player.getWager());
+							handList.add(tempHandOne);
+							handList.add(tempHandTwo);
+							clear();
+							break;
+						case 'N':
+							handList.add(player);
+							clear();
+							break;
+						default:
+							handList.add(player);
+							clear();
+							break;
+					}
+				}else{
+					clear();
+					System.out.print("The dealers face up card is the " + dealersCard + ". ");
+					scan.nextLine();
+					clear();
+					handList.add(player);
+				}
+
+				boolean stand = false;
+				//loops through arraylist incase player split
+				for(PlayerHand tempHand : handList){
+					//loops for action until user stands or busts
+					while(tempHand.getValue()<22 && !stand){
+						//switch performs actions based on player input
+						switch(getMove(scan, tempHand)){
+							case "HIT":
+								tempHand.addCard(deck.dealCard());
+								clear();
+								break;
+							case "STAND":
+								stand = true;
+								clear();
+								break;
+							default:
+								System.out.print("Sorry input not recognized... ");
+								scan.nextLine();
+								clear();
+								break;
+						}
+					}
+				}
+
+				//if player is not bust the dealer takes their turn
+				if(player.getValue()<22){
+					//deals to dealer per preset moves
+					System.out.println(dealer);
+					if(dealer.hitOrStand()){
+						do{
+							System.out.println("The dealer hits.");
+							dealer.addCard(deck.dealCard());
+							System.out.print(dealer);
+							scan.nextLine();
+							clear();
+						}while(dealer.hitOrStand());
+						if(dealer.getValue() > 21){
+							System.out.print("Dealer busts! ");
+							scan.nextLine();
+							clear();
+						}
+					}
+				} else{
+					System.out.print("Bust! ");
+					scan.nextLine();
+					clear();
+				}
+
+				for(PlayerHand tempHand : handList){
+					calculateWin(tempHand, dealer, scan);
+					//add cards back to deck
+					deck.addCards(tempHand.getHand());
+					//resets objects for next loop
+					tempHand.resetHand();
+				}
+			}
+			//clear up this game
+			deck.addCards(dealer.getHand());
 			dealer.resetHand();
+			handList.clear();
 			scan.reset();
 
 		}while(balance != 0 && promptReplay(scan));
-		//print results
+		if(balance > INITIAL_ACCOUNT){
+			clear();
+			System.out.printf("Thanks for playing you won $%d in total! ", balance - INITIAL_ACCOUNT);
+			scan.nextLine();
+			scan.close();
+			clear();
+		} else {
+			clear();
+			System.out.printf("Thanks for playing you lost $%d in total!\nBetter luck next time! ", INITIAL_ACCOUNT - balance);
+			scan.nextLine();
+			scan.close();
+			clear();
+		}
 	}
 
 	//requests user to establish inital account amount
@@ -143,7 +194,7 @@ public class Blackjack {
 		} catch (Exception e) {
 			clear();
 			System.out.println("Whoops something went wrong... " + e);
-			System.out.println("Setting inital balance to 100");
+			System.out.println("Setting inital balance to $100");
 			return 100;
 		}
 	}
@@ -153,7 +204,7 @@ public class Blackjack {
 		while(true){
 			try {
 				clear();
-				System.out.printf("You have %d left in your account.\nWhat is your bet? ", balance);
+				System.out.printf("You have $%d left in your account.\nWhat is your bet? ", balance);
 				int bet = Integer.valueOf(betAmount.nextLine());
 				//validates bet
 				if(bet < balance){
@@ -167,7 +218,9 @@ public class Blackjack {
 			} catch (Exception e) {
 				clear();
 				System.out.println("Whoops wasnt an int... ");
-				System.out.println("Setting bet to 1");
+				System.out.println("Setting bet to $1");
+				betAmount.nextLine();
+				clear();
 				return 1;
 			}
 		}
@@ -187,11 +240,27 @@ public class Blackjack {
 	}
 
 	//returns true if player scored higher that dealer but not over 21, else returns false
-	private static boolean checkWin(PlayerHand player, DealerHand dealer) {
+	private static void calculateWin(PlayerHand player, DealerHand dealer, Scanner scan) {
 		//sets total to -1 if player is bust, else sets to card total
 		int playerTotal = player.getValue() < 22 ? player.getValue() : -1;
 		int dealerTotal = dealer.getValue() < 22 ? dealer.getValue() : -1;
-		return playerTotal > dealerTotal ? true : false;
+		//checks if player beat the dealer
+		if(playerTotal > dealerTotal ? true : false){
+			System.out.print("You win! ");
+			//increases the balance by the players wager
+			balance += player.getWager();
+			scan.nextLine();
+			clear();
+		}else if(player.getValue() == dealer.getValue()){
+			System.out.print("It's a tie. Your bet is being returned ");
+			scan.nextLine();
+			clear();
+		}else{
+			System.out.print("Better luck next time... ");
+			balance -= player.getWager();
+			scan.nextLine();
+			clear();
+		}
 	}
 
 	//asks if the player would like to hit or stand
