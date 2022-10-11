@@ -4,6 +4,7 @@
 //Lab 4 - Deck of Cards
 
 package blackjack;
+
 import java.util.*;
 
 public class Blackjack {
@@ -57,9 +58,9 @@ public class Blackjack {
 			player.addCard(deck.dealCard());
 
 			//this is the card the user will be able to see
-			dealersCard = dealer.getHand().get(0);
+			dealersCard = dealer.getCard(0);
 			
-			//blackjack is true if the starting hand size is 2 and the 
+			//blackjack is true if the starting hand size is 2 and the value is equal to 21
 			boolean blackjack = (player.getHand().size() == 2 && player.getValue() == 21) ? true : false;
 			if(blackjack){
 				System.out.print("Blackjack!");
@@ -68,21 +69,20 @@ public class Blackjack {
 				scan.nextLine();
 				clear();
 			}else{
-
-				//checks if player wants to split, skips if this would make the player negative
-				if(player.getHand().get(0).getFace()==player.getHand().get(1).getFace() && player.getWager() * 2 <= balance){
+				//checks if player wants to split, skips if this would make the player's hand value negative
+				if(player.getCardFace(0)==player.getCardFace(1) && player.getWager() * 2 <= balance){
+					System.out.println("The dealer's face up card is the " + dealersCard + ".");
 					System.out.println(player);
-					System.out.println("The dealers face up card is the " + dealersCard + ".");
-					System.out.print("Would you like to split? ");
-					String responce =  scan.nextLine();
-					switch(responce.toUpperCase().charAt(0)){
+					System.out.print("Would you like to split? (y/n) ");
+					String response =  scan.nextLine();
+					switch(response.toUpperCase().charAt(0)){
 						case 'Y':
 							PlayerHand tempHandOne = new PlayerHand();
 							PlayerHand tempHandTwo = new PlayerHand();
 							tempHandOne.setName(player.getName());
 							tempHandTwo.setName(player.getName());
-							tempHandOne.addCard(player.getHand().get(0));
-							tempHandTwo.addCard(player.getHand().get(1));
+							tempHandOne.addCard(player.getCard(0));
+							tempHandTwo.addCard(player.getCard(1));
 							tempHandOne.setWager(player.getWager());
 							tempHandTwo.setWager(player.getWager());
 							handList.add(tempHandOne);
@@ -100,14 +100,14 @@ public class Blackjack {
 					}
 				}else{
 					clear();
-					System.out.print("The dealers face up card is the " + dealersCard + ". ");
+					System.out.println("The dealer's face up card is the " + dealersCard + ".");
 					scan.nextLine();
 					clear();
 					handList.add(player);
 				}
 
 				boolean stand = false;
-				//loops through arraylist incase player split
+				//loops through arraylist in case player splits
 				for(PlayerHand tempHand : handList){
 					//loops for action until user stands or busts
 					while(tempHand.getValue()<22 && !stand){
@@ -169,32 +169,43 @@ public class Blackjack {
 			scan.reset();
 
 		}while(balance != 0 && promptReplay(scan));
+		
 		if(balance > INITIAL_ACCOUNT){
 			clear();
-			System.out.printf("Thanks for playing you won $%d in total! ", balance - INITIAL_ACCOUNT);
+			System.out.printf("Thanks for playing, you won $%d in total! ", balance - INITIAL_ACCOUNT);
 			scan.nextLine();
 			scan.close();
 			clear();
 		} else {
 			clear();
-			System.out.printf("Thanks for playing you lost $%d in total!\nBetter luck next time! ", INITIAL_ACCOUNT - balance);
+			System.out.printf("Thanks for playing, you lost $%d in total!\nBetter luck next time! ", INITIAL_ACCOUNT - balance);
 			scan.nextLine();
 			scan.close();
 			clear();
 		}
 	}
 
-	//requests user to establish inital account amount
+	//prints introduction to console that explains game and establishes basic rules
+	private static void introduction() {
+		clear();
+		System.out.println("Welcome to blackjack!");
+		System.out.println("This game is brought to you by Sarah Hoekema and Sean Chambers.");
+		System.out.println("The goal of the game is to beat the dealer's score without going over 21.");
+		System.out.println("Cards are equal to their face value.");
+		System.out.print("All face cards are worth 10 points and Aces are either 11 or 1. ");
+	}
+
+	//requests user to establish initial account amount
 	private static int establishAccount(Scanner accountAmount){
 		try {
 			clear();
-			System.out.print("Please input your inital balance: ");
+			System.out.print("Please input your initial balance: ");
 			int amount = Integer.valueOf(accountAmount.nextLine());
 			return amount;
 		} catch (Exception e) {
 			clear();
 			System.out.println("Whoops something went wrong... " + e);
-			System.out.println("Setting inital balance to $100");
+			System.out.println("Setting initial balance to $100");
 			return 100;
 		}
 	}
@@ -207,17 +218,17 @@ public class Blackjack {
 				System.out.printf("You have $%d left in your account.\nWhat is your bet? ", balance);
 				int bet = Integer.valueOf(betAmount.nextLine());
 				//validates bet
-				if(bet < balance){
+				if(bet <= balance){
 					return bet;
 				}else{
-					System.out.print("Bet must be less than balance. ");
+					System.out.print("Bet can't exceed balance. ");
 					betAmount.nextLine();
 					clear();
 					continue;
 				}
 			} catch (Exception e) {
 				clear();
-				System.out.println("Whoops wasnt an int... ");
+				System.out.println("Whoops that wasn't an int... ");
 				System.out.println("Setting bet to $1");
 				betAmount.nextLine();
 				clear();
@@ -226,20 +237,16 @@ public class Blackjack {
 		}
 	}
 	
-	/**
-	 * Prints introduction to console.
-	 * Explains game and established basic rules. 
-	 */
-	private static void introduction() {
+	//asks if the player would like to hit or stand
+	private static String getMove(Scanner nextMove, PlayerHand player){
 		clear();
-		System.out.println("Welcome to blackjack!");
-		System.out.println("This game is brought to you by Sarah Hoekema and Sean Chambers");
-		System.out.println("The goal of the game is to beat the dealers score without going over 21.");
-		System.out.println("Cards are equal to their face value.");
-		System.out.print("All face cards are worth 10 points, Aces are either 11 or 1. ");
+		System.out.println(player);
+		System.out.print("Would you like to hit or stand? ");
+		String move = nextMove.nextLine();
+		return move.toUpperCase();
 	}
 
-	//returns true if player scored higher that dealer but not over 21, else returns false
+	//returns true if player scored higher than dealer but not over 21, else returns false
 	private static void calculateWin(PlayerHand player, DealerHand dealer, Scanner scan) {
 		//sets total to -1 if player is bust, else sets to card total
 		int playerTotal = player.getValue() < 22 ? player.getValue() : -1;
@@ -252,7 +259,7 @@ public class Blackjack {
 			scan.nextLine();
 			clear();
 		}else if(player.getValue() == dealer.getValue()){
-			System.out.print("It's a tie. Your bet is being returned ");
+			System.out.print("It's a tie. Your bet is being returned. ");
 			scan.nextLine();
 			clear();
 		}else{
@@ -263,19 +270,10 @@ public class Blackjack {
 		}
 	}
 
-	//asks if the player would like to hit or stand
-	private static String getMove(Scanner nextMove, PlayerHand player){
-		clear();
-		System.out.println(player.toString());
-		System.out.print("Would you like to hit or stand? ");
-		String move = nextMove.nextLine();
-		return move.toUpperCase();
-	}
-
 	//asks if the user would like to play again, provides basic error handing
 	private static boolean promptReplay(Scanner playAgainScanner) {
 		clear();
-		System.out.print("Would you like to play again? ");
+		System.out.print("Would you like to play again? (y/n) ");
 		try {
 			String response = playAgainScanner.nextLine();    
 			//ensures response is the upper case of the first character

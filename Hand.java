@@ -11,22 +11,22 @@ import java.util.ArrayList;
 public class Hand {
 	//fields
 	private String name;
-	private boolean ace;
+	private int aceOfValue11;
 	private int value;
 	private ArrayList<Card> hand;
 	
 	//constructor
 	public Hand() {
 		name = "";
-		ace = false;
+		aceOfValue11 = 0;
 		value = 0;
 		hand = new ArrayList<Card>();
 	}
 	//adds a single card to the hand ArrayList
 	public void addCard(Card card) {
 		value += card.cardValue();
-		if(card.cardValue() == 11) {
-			ace = true;
+		if(card.getFace() == "Ace") {
+			aceOfValue11++;
 		}
 		hand.add(card);
 	}
@@ -34,19 +34,32 @@ public class Hand {
 	public Card getCard(int index) {
 		return hand.get(index);
 	}
+	//returns the value of the Card at the specified index
+	public int getCardValue(int index) {
+		return hand.get(index).cardValue();
+	}
+	//returns the face of the Card at the specified index
+	public String getCardFace(int index) {
+		return hand.get(index).getFace();
+	}
 	//gets the hand ArrayList
 	public ArrayList<Card> getHand(){
 		return hand;
 	}
 	//resets the data within the hand
 	public void resetHand() {
-		ace = false;
+		aceOfValue11 = 0;
 		value = 0;
 		hand.clear();
 	}
 	//returns a string representation of the hand
 	public String toString() {
-		String s = name + "'s hand: ";
+		String s;
+		if(name.charAt(name.length()-1) == 's') {
+			s = name + "' hand: ";
+		} else {
+			s = name + "'s hand: ";
+		}
 		for(int i = 0; i < hand.size() - 1; i++) {
 			s += hand.get(i).toString() + ", ";
 		}
@@ -55,8 +68,9 @@ public class Hand {
 	}
 	//returns the current value of the hand
 	public int getValue() {
-		if(ace == true && value > 21) {
+		while(aceOfValue11 > 0 && value > 21) {
 			value -= 10;
+			aceOfValue11--;
 		}
 		return value;
 	}
